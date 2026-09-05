@@ -1,0 +1,133 @@
+type Query {
+    _health: String
+    me: User
+    celebrations: [Celebration!]!
+    celebrationBySlug(slug: String!): Celebration
+    templates(occasion: Occasion): [Template!]!
+}
+
+type Mutation {
+    createUser(input: CreateUserInput!): User!
+    login(input: LoginInput!): User!
+
+    createCelebration(
+        input: CreateCelebrationInput!
+    ): Celebration!
+
+    updateCelebration(
+        id: ID!,
+        input: UpdateCelebrationInput!
+    ): Celebration!
+
+    publishCelebration(
+        id: ID!
+    ): Celebration!
+
+    archiveCelebration(
+        id: ID!
+    ): Celebration!
+
+    generateCloudinaryUploadSignature: CloudinaryUploadSignature!
+}
+
+input CreateUserInput {
+    name: String!
+    email: String!
+    password: String!
+}
+
+input LoginInput {
+    email: String!
+    password: String!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+# -------------------------
+# Celebration
+# -------------------------
+
+type Celebration {
+    id: ID!
+    title: String!
+    recipientName: String!
+    recipientEmail: String
+    recipientPhone: String
+    occasion: Occasion!
+    customOccasion: String
+    message: String
+    coverImageUrl: String
+    status: Status!
+    template: Template
+    publicSlug: String!
+    createdAt: String!
+    updatedAt: String!
+}
+
+input CreateCelebrationInput {
+    title: String!
+    recipientName: String!
+    recipientEmail: String
+    recipientPhone: String
+
+    occasion: Occasion!
+    customOccasion: String
+    message: String
+    coverImageUrl: String
+
+    templateId: ID
+    customSlug: String
+}
+
+input UpdateCelebrationInput {
+    title: String
+    recipientName: String
+    recipientEmail: String
+    recipientPhone: String
+
+    occasion: Occasion
+    customOccasion: String
+    message: String
+    coverImageUrl: String
+
+    templateId: ID
+    customSlug: String
+}
+
+
+type Template {
+    id: ID!
+    name: String!
+    previewImageUrl: String!
+    occasion: Occasion!
+    active: Boolean!
+}
+
+enum Occasion {
+    BIRTHDAY
+    WEDDING
+    ANNIVERSARY
+    GRADUATION
+    APPRECIATION
+    RETIREMENT
+    CUSTOM
+}
+
+
+enum Status {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+}
+
+type CloudinaryUploadSignature {
+    signature: String!
+    timestamp: String!
+    apiKey: String!
+    cloudName: String!
+    folder: String!
+}
