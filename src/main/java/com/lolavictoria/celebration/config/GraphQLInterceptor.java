@@ -25,12 +25,13 @@ public class GraphQLInterceptor {
                 if (token != null) {
 
                     ResponseCookie cookie = ResponseCookie
-                            .from("access_token", token)
-                            .httpOnly(true)
-                            .secure(false)
-                            .path("/")
-                            .maxAge(60 * 60)
-                            .build();
+                        .from("access_token", token)
+                        .httpOnly(true)
+                        .secure(true)
+                        .sameSite("None")
+                        .path("/")
+                        .maxAge(60 * 60)
+                        .build();
 
                     response.getResponseHeaders()
                             .add(HttpHeaders.SET_COOKIE, cookie.toString());
