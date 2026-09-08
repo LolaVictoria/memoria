@@ -100,6 +100,12 @@ public class UserService {
             throw new RuntimeException("Invalid email or password");
         }
 
+        if (!user.isEmailVerified()) {
+            throw new RuntimeException(
+                    "Please verify your email before signing in."
+            );
+        }
+
         return user;
     }
 
