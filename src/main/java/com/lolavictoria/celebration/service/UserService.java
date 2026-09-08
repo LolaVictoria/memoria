@@ -4,18 +4,26 @@ import com.lolavictoria.celebration.entity.User;
 import com.lolavictoria.celebration.graphql.input.CreateUserInput;
 import com.lolavictoria.celebration.repository.UserRepository;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-
+    @Value ("${frontend.url}")
+    private String frontendUrl;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BrevoEmailService brevoEmailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BrevoEmailService brevoEmailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.brevoEmailService = brevoEmailService;
     }
 
     public User createUser(CreateUserInput input) {
@@ -27,10 +35,55 @@ public class UserService {
 
         String hashedPassword = passwordEncoder.encode(input.password());
         user.setPasswordHash(hashedPassword);
+        // Generate email verification token
+        String verificationToken = UUID.randomUUID().toString();
+
+         user.setVerificationToken(verificationToken);
+
+        // Token expires in 24 hours
+        user.setVerificationTokenExpiry(
+                Instant.now().plus(24, ChronoUnit.HOURS)
+        );
+
+        // Save user before sending email
+        User savedUser = userRepository.save(user);
+
+       String verificationLink =
+        frontendUrl + "/verify-email?token="
+                + verificationToken;
+
+            brevoEmailService.sendVerificationEmail(
+                    savedUser.getEmail(),
+                    savedUser.getName(),
+                    verificationLink
+            );
+
+            return savedUser;
+    }
+
+    
+    public User verifyEmail(String token) {
+
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid verification token")
+                );
+
+        if (user.getVerificationTokenExpiry() == null ||
+                user.getVerificationTokenExpiry().isBefore(Instant.now())) {
+
+            throw new RuntimeException("Verification token has expired");
+        }
+
+        user.setEmailVerified(true);
+
+        // Clear the token so it cannot be reused
+        user.setVerificationToken(null);
+        user.setVerificationTokenExpiry(null);
 
         return userRepository.save(user);
     }
-
+    
     public User login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
@@ -42,6 +95,8 @@ public class UserService {
 
         return user;
     }
+
+
 
     public User findByEmail(String email) {
 

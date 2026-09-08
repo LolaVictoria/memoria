@@ -2,6 +2,7 @@ package com.lolavictoria.celebration.entity;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +21,15 @@ public class User {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(unique = true)
+    private String verificationToken;
+
+    @Column
+    private Instant verificationTokenExpiry;
 
     public User() {
     }
@@ -50,5 +60,29 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+
+    public Instant getVerificationTokenExpiry() {
+        return verificationTokenExpiry;
+    }
+
+    public void setVerificationTokenExpiry(Instant verificationTokenExpiry) {
+        this.verificationTokenExpiry = verificationTokenExpiry;
     }
 }

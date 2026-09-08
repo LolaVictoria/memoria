@@ -33,6 +33,11 @@ public class UserGraphQLController {
     }
 
     @MutationMapping
+    public User verifyEmail(@Argument String token) {
+        return userService.verifyEmail(token);
+    }
+
+    @MutationMapping
     public User login(
             @Argument LoginInput input,
             GraphQLContext context

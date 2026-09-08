@@ -9,7 +9,7 @@ type Query {
 type Mutation {
     createUser(input: CreateUserInput!): User!
     login(input: LoginInput!): User!
-
+    verifyEmail(token: String!): User!
     createCelebration(
         input: CreateCelebrationInput!
     ): Celebration!
@@ -98,10 +98,18 @@ input UpdateCelebrationInput {
     customSlug: String
 }
 
+enum TemplateStyle {
+    EDITORIAL
+    PHOTO
+    PLAYFUL
+    ELEGANT
+    BOLD
+}
 
 type Template {
     id: ID!
     name: String!
+    style: TemplateStyle!
     previewImageUrl: String!
     occasion: Occasion!
     active: Boolean!

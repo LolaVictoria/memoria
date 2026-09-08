@@ -1,6 +1,5 @@
 package com.lolavictoria.celebration.entity;
 
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,6 +15,10 @@ public class Template {
 
     @Column(nullable = false)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TemplateStyle style;
 
     @Column(nullable = false)
     private String previewImageUrl;
@@ -36,7 +39,6 @@ public class Template {
     public Template() {
     }
 
-
     public UUID getId() {
         return id;
     }
@@ -51,6 +53,14 @@ public class Template {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TemplateStyle getStyle() {
+        return style;
+    }
+
+    public void setStyle(TemplateStyle style) {
+        this.style = style;
     }
 
     public String getPreviewImageUrl() {
@@ -96,6 +106,7 @@ public class Template {
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
+
         createdAt = now;
         updatedAt = now;
     }
@@ -104,4 +115,4 @@ public class Template {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-} 
+}
