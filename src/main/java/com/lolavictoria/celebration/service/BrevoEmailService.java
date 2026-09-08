@@ -100,4 +100,73 @@ public class BrevoEmailService {
             );
         }
     }
+
+    public void sendWelcomeEmail(
+        String recipientEmail,
+        String recipientName
+) {
+
+    SendSmtpEmail email = new SendSmtpEmail();
+
+    SendSmtpEmailSender sender = new SendSmtpEmailSender();
+    sender.setEmail(senderEmail);
+    sender.setName(senderName);
+
+    SendSmtpEmailTo recipient = new SendSmtpEmailTo();
+    recipient.setEmail(recipientEmail);
+    recipient.setName(recipientName);
+
+    email.setSender(sender);
+    email.setTo(List.of(recipient));
+
+    email.setSubject("Welcome to Memoria 🎉");
+
+    email.setHtmlContent(
+            """
+            <h2>You're officially part of Memoria, %s! 🎉</h2>
+
+            <p>
+                Your email has been verified successfully.
+            </p>
+
+            <p>
+                Welcome to Memoria — a place to create, preserve,
+                and share beautiful celebrations with the people
+                who matter to you.
+            </p>
+
+            <p>
+                Whether it's a birthday, graduation, wedding,
+                anniversary, or simply a moment worth remembering,
+                we're glad you're here.
+            </p>
+
+            <p>
+                <a href="https://memoria-frontend-v1.vercel.app/">
+                    Start creating celebrations
+                </a>
+            </p>
+
+            <p>
+                Here's to making more moments worth keeping. ✨
+            </p>
+
+            <p>
+                — The Memoria Team
+            </p>
+            """.formatted(recipientName)
+    );
+
+    try {
+
+        emailApi.sendTransacEmail(email);
+
+    } catch (ApiException e) {
+
+        throw new RuntimeException(
+                "Failed to send welcome email",
+                e
+        );
+    }
+}
 }

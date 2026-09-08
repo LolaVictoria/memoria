@@ -64,26 +64,33 @@ public class UserService {
     
     public User verifyEmail(String token) {
 
-        User user = userRepository.findByVerificationToken(token)
-                .orElseThrow(() ->
-                        new RuntimeException("Invalid verification token")
-                );
+    User user = userRepository.findByVerificationToken(token)
+            .orElseThrow(() ->
+                    new RuntimeException("Invalid verification token")
+            );
 
-        if (user.getVerificationTokenExpiry() == null ||
-                user.getVerificationTokenExpiry().isBefore(Instant.now())) {
+    if (user.getVerificationTokenExpiry() == null ||
+            user.getVerificationTokenExpiry().isBefore(Instant.now())) {
 
-            throw new RuntimeException("Verification token has expired");
-        }
-
-        user.setEmailVerified(true);
-
-        // Clear the token so it cannot be reused
-        user.setVerificationToken(null);
-        user.setVerificationTokenExpiry(null);
-
-        return userRepository.save(user);
+        throw new RuntimeException("Verification token has expired");
     }
-    
+
+    user.setEmailVerified(true);
+
+    // Clear the token so it cannot be reused
+    user.setVerificationToken(null);
+    user.setVerificationTokenExpiry(null);
+
+    User verifiedUser = userRepository.save(user);
+
+    // Send welcome email after successful verification
+    brevoEmailService.sendWelcomeEmail(
+            verifiedUser.getEmail(),
+            verifiedUser.getName()
+    );
+
+    return verifiedUser;
+}
     public User login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
