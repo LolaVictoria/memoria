@@ -17,7 +17,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://localhost:5173",
-                                "https://memoria-frontend-v1.vercel.app/"
+                                "https://memoria-frontend-v1.vercel.app"
                         )
                         .allowedMethods(
                                 "GET",
