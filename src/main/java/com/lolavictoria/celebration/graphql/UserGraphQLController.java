@@ -12,6 +12,9 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+
 
 @Controller
 public class UserGraphQLController {
@@ -53,6 +56,27 @@ public class UserGraphQLController {
         context.put("access_token", token);
 
         return user;
+    }
+
+    @MutationMapping
+    public Boolean logout(
+            jakarta.servlet.http.HttpServletResponse response
+    ) {
+        ResponseCookie cookie = ResponseCookie
+                .from("access_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.setHeader(
+                HttpHeaders.SET_COOKIE,
+                cookie.toString()
+        );
+
+        return true;
     }
     @PreAuthorize("isAuthenticated()")
     @QueryMapping

@@ -10,6 +10,7 @@ type Mutation {
     createUser(input: CreateUserInput!): User!
     login(input: LoginInput!): User!
     verifyEmail(token: String!): User!
+    logout: Boolean!
     createCelebration(
         input: CreateCelebrationInput!
     ): Celebration!
