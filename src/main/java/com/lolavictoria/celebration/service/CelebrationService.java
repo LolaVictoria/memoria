@@ -86,7 +86,11 @@ public class CelebrationService {
         celebration.setCustomOccasion(request.getCustomOccasion());
         celebration.setMessage(request.getMessage());
         celebration.setCoverImageUrl(request.getCoverImageUrl());
-        celebration.setStatus(Status.DRAFT);
+        celebration.setStatus(
+                request.isSaveAsDraft()
+                        ? Status.DRAFT
+                        : Status.PUBLISHED
+                );
         celebration.setCreator(creator);
         celebration.setTemplate(template);
         celebration.setPublicSlug(publicSlug);

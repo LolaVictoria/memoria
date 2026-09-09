@@ -81,6 +81,7 @@ input CreateCelebrationInput {
 
     templateId: ID
     customSlug: String
+    saveAsDraft: Boolean!
 }
 
 input UpdateCelebrationInput {

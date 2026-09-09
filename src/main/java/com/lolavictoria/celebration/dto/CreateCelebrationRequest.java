@@ -21,6 +21,8 @@ public class CreateCelebrationRequest {
 
     private String message;
 
+    private boolean saveAsDraft;
+
     private String coverImageUrl;
 
     @NotNull
@@ -113,6 +115,14 @@ public class CreateCelebrationRequest {
 
     public void setCoverImageUrl(String coverImageUrl) {
         this.coverImageUrl = coverImageUrl;
+    }
+
+    public boolean isSaveAsDraft() {
+        return saveAsDraft;
+    }
+
+    public void setSaveAsDraft(boolean saveAsDraft) {
+        this.saveAsDraft = saveAsDraft;
     }
 
     // getters and setters
