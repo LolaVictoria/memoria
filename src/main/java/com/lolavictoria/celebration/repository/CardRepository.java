@@ -6,13 +6,13 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.lolavictoria.celebration.entity.Celebration;
+import com.lolavictoria.celebration.entity.Card;
 import com.lolavictoria.celebration.entity.User;
 
-public interface CelebrationRepository extends JpaRepository<Celebration, UUID> {
+public interface CardRepository extends JpaRepository<Card, UUID> {
 
-    List<Celebration> findByCreator(User creator);
+    List<Card> findByCreator(User creator);
 
-    Optional<Celebration> findByPublicSlug(String publicSlug);
+    Optional<Card> findByPublicSlug(String publicSlug);
     boolean existsByPublicSlug(String publicSlug);
 }

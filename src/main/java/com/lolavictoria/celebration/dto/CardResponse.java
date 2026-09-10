@@ -1,10 +1,14 @@
 package com.lolavictoria.celebration.dto;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.lolavictoria.celebration.entity.Occasion;
+import com.lolavictoria.celebration.entity.Status;
 
-public class UpdateCelebrationRequest {
+public class CardResponse {
+
+    private UUID id;
 
     private String title;
 
@@ -18,15 +22,25 @@ public class UpdateCelebrationRequest {
 
     private String customOccasion;
 
-    private String message;
-
-    private String coverImageUrl;
-
-    private String customSlug;
+    private Status status;
 
     private UUID templateId;
 
-    public UpdateCelebrationRequest() {
+    private String publicSlug;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    public CardResponse() {
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -77,12 +91,12 @@ public class UpdateCelebrationRequest {
         this.customOccasion = customOccasion;
     }
 
-    public String getCustomSlug() {
-        return customSlug;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setCustomSlug(String customSlug) {
-        this.customSlug = customSlug;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public UUID getTemplateId() {
@@ -93,20 +107,28 @@ public class UpdateCelebrationRequest {
         this.templateId = templateId;
     }
 
-    public String getMessage() {
-        return message;
+    public String getPublicSlug() {
+        return publicSlug;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setPublicSlug(String publicSlug) {
+        this.publicSlug = publicSlug;
     }
 
-    public String getCoverImageUrl() {
-        return coverImageUrl;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCoverImageUrl(String coverImageUrl) {
-        this.coverImageUrl = coverImageUrl;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     // getters and setters

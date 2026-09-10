@@ -1,6 +1,6 @@
 package com.lolavictoria.celebration.entity;
 
-public enum TemplateStyle {
+public enum WebsiteTemplateStyle {
     EDITORIAL,
     PHOTO,
     PLAYFUL,

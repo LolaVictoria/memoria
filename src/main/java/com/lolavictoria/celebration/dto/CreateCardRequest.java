@@ -7,7 +7,7 @@ import com.lolavictoria.celebration.entity.Occasion;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class CreateCelebrationRequest {
+public class CreateCardRequest {
 
     @NotBlank
     private String title;
@@ -34,7 +34,7 @@ public class CreateCelebrationRequest {
 
     private UUID templateId;
 
-    public CreateCelebrationRequest() {
+    public CreateCardRequest() {
     }
 
     public String getTitle() {

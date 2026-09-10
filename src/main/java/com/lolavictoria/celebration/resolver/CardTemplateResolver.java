@@ -1,8 +1,8 @@
 package com.lolavictoria.celebration.resolver;
 
 import com.lolavictoria.celebration.entity.Occasion;
-import com.lolavictoria.celebration.entity.Template;
-import com.lolavictoria.celebration.repository.TemplateRepository;
+import com.lolavictoria.celebration.entity.CardTemplate;
+import com.lolavictoria.celebration.repository.CardTemplateRepository;
 
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -11,26 +11,26 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
-public class TemplateResolver {
+public class CardTemplateResolver {
 
-    private final TemplateRepository templateRepository;
+    private final CardTemplateRepository cardTemplateRepository;
 
-    public TemplateResolver(
-            TemplateRepository templateRepository
+    public CardTemplateResolver(
+            CardTemplateRepository cardTemplateRepository
     ) {
-        this.templateRepository = templateRepository;
+        this.cardTemplateRepository = cardTemplateRepository;
     }
 
     @QueryMapping
-    public List<Template> templates(
+    public List<CardTemplate> templates(
             @Argument Occasion occasion
     ) {
 
         if (occasion == null) {
-            return templateRepository.findAll();
+            return cardTemplateRepository.findAll();
         }
 
-        return templateRepository
+        return cardTemplateRepository
                 .findByOccasionAndActiveTrue(occasion);
     }
 }

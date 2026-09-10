@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.lolavictoria.celebration.entity.Occasion;
-import com.lolavictoria.celebration.entity.Template;
+import com.lolavictoria.celebration.entity.CardTemplate;
 
-public interface TemplateRepository extends JpaRepository<Template, UUID> {
+public interface CardTemplateRepository extends JpaRepository<CardTemplate, UUID> {
 
-    List<Template> findByOccasionAndActiveTrue(Occasion occasion);
+    List<CardTemplate> findByOccasionAndActiveTrue(Occasion occasion);
 }

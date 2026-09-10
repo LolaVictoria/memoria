@@ -1,38 +1,82 @@
-package com.lolavictoria.celebration.dto;
+package com.lolavictoria.celebration.entity;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
-import com.lolavictoria.celebration.entity.Occasion;
-import com.lolavictoria.celebration.entity.Status;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-public class CelebrationResponse {
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "websites")
+public class Website {
+
+    @Id
+    @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String recipientName;
 
     private String recipientEmail;
 
     private String recipientPhone;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Occasion occasion;
 
+    // Only populated when occasion = CUSTOM
     private String customOccasion;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
 
-    private UUID templateId;
+    // Person creating the website
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "creator_id", nullable = false)
+    private User creator;
 
+    // Website design selected by creator
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "template_id", nullable = false)
+    private WebsiteTemplate template;
+
+    // Content entered by the creator.
+    // This will contain the values required by the selected template.
+    @JdbcTypeCode (SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> content;
+
+    // Public/shareable URL identifier
+    @Column(nullable = false, unique = true, length = 50)
     private String publicSlug;
 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public CelebrationResponse() {
+    public Website() {
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     public UUID getId() {
@@ -99,12 +143,28 @@ public class CelebrationResponse {
         this.status = status;
     }
 
-    public UUID getTemplateId() {
-        return templateId;
+    public User getCreator() {
+        return creator;
     }
 
-    public void setTemplateId(UUID templateId) {
-        this.templateId = templateId;
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+    public WebsiteTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(WebsiteTemplate template) {
+        this.template = template;
+    }
+
+    public Map<String, Object> getContent() {
+        return content;
+    }
+
+    public void setContent(Map<String, Object> content) {
+        this.content = content;
     }
 
     public String getPublicSlug() {
@@ -130,6 +190,4 @@ public class CelebrationResponse {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    // getters and setters
 }

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "templates")
-public class Template {
+public class CardTemplate {
 
     @Id
     @GeneratedValue
@@ -18,7 +18,7 @@ public class Template {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TemplateStyle style;
+    private CardTemplateStyle style;
 
     @Column(nullable = false)
     private String previewImageUrl;
@@ -36,7 +36,7 @@ public class Template {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Template() {
+    public CardTemplate() {
     }
 
     public UUID getId() {
@@ -55,11 +55,11 @@ public class Template {
         this.name = name;
     }
 
-    public TemplateStyle getStyle() {
+    public CardTemplateStyle getStyle() {
         return style;
     }
 
-    public void setStyle(TemplateStyle style) {
+    public void setStyle(CardTemplateStyle style) {
         this.style = style;
     }
 

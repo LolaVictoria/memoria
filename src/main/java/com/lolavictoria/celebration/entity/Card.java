@@ -6,8 +6,8 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "celebrations")
-public class Celebration {
+@Table(name = "cards")
+public class Card {
 
     @Id
     @GeneratedValue
@@ -40,17 +40,17 @@ public class Celebration {
 
     private String coverImageUrl;
 
-    // The person creating the celebration
+    // The person creating the card
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
-    // Template selected for the celebration
+    // Template selected for the card
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "template_id")
-    private Template template;
+    private CardTemplate template;
 
-    // Used for the public/shareable celebration URL
+    // Used for the public/shareable card URL
     @Column(nullable = false, unique = true, length = 50)
     private String publicSlug;
 
@@ -60,7 +60,7 @@ public class Celebration {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Celebration() {
+    public Card() {
     }
 
     public UUID getId() {
@@ -135,11 +135,11 @@ public class Celebration {
         this.creator = creator;
     }
 
-    public Template getTemplate() {
+    public CardTemplate getTemplate() {
         return template;
     }
 
-    public void setTemplate(Template template) {
+    public void setTemplate(CardTemplate template) {
         this.template = template;
     }
 

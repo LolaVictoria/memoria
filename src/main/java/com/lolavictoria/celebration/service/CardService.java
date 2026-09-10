@@ -1,17 +1,17 @@
 package com.lolavictoria.celebration.service;
 
-import com.lolavictoria.celebration.dto.CreateCelebrationRequest;
-import com.lolavictoria.celebration.dto.UpdateCelebrationRequest;
-import com.lolavictoria.celebration.entity.Celebration;
+import com.lolavictoria.celebration.dto.CreateCardRequest;
+import com.lolavictoria.celebration.dto.UpdateCardRequest;
+import com.lolavictoria.celebration.entity.Card;
 import com.lolavictoria.celebration.entity.Status;
-import com.lolavictoria.celebration.entity.Template;
+import com.lolavictoria.celebration.entity.CardTemplate;
 import com.lolavictoria.celebration.entity.User;
 import com.lolavictoria.celebration.exception.BadRequestException;
 import com.lolavictoria.celebration.exception.ForbiddenException;
 import com.lolavictoria.celebration.exception.ResourceNotFoundException;
 import com.lolavictoria.celebration.exception.UnauthenticatedException;
-import com.lolavictoria.celebration.repository.CelebrationRepository;
-import com.lolavictoria.celebration.repository.TemplateRepository;
+import com.lolavictoria.celebration.repository.CardRepository;
+import com.lolavictoria.celebration.repository.CardTemplateRepository;
 import com.lolavictoria.celebration.repository.UserRepository;
 
 import org.springframework.security.core.Authentication;
@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class CelebrationService {
+public class CardService {
 
-    private final CelebrationRepository celebrationRepository;
-    private final TemplateRepository templateRepository;
+    private final CardRepository cardRepository;
+    private final CardTemplateRepository cardTemplateRepository;
     private final UserRepository userRepository;
 
     private static final String BASE62 =
@@ -34,28 +34,28 @@ public class CelebrationService {
 
     private final SecureRandom random = new SecureRandom();
 
-    public CelebrationService(
-            CelebrationRepository celebrationRepository,
-            TemplateRepository templateRepository,
+    public CardService(
+            CardRepository cardRepository,
+            CardTemplateRepository cardTemplateRepository,
             UserRepository userRepository
     ) {
-        this.celebrationRepository = celebrationRepository;
-        this.templateRepository = templateRepository;
+        this.cardRepository = cardRepository;
+        this.cardTemplateRepository = cardTemplateRepository;
         this.userRepository = userRepository;
     }
 
-    public Celebration createCelebration(
-            CreateCelebrationRequest request
+    public Card createCard(
+            CreateCardRequest request
     ) {
 
         User creator = getCurrentUser();
 
         validateCustomOccasion(request);
 
-        Template template = null;
+        CardTemplate template = null;
 
         if (request.getTemplateId() != null) {
-            template = templateRepository
+            template = cardTemplateRepository
                     .findById(request.getTemplateId())
                     .orElseThrow(() ->
                         new ResourceNotFoundException("Template not found")
@@ -69,127 +69,127 @@ public class CelebrationService {
 
             publicSlug = request.getCustomSlug().trim().toLowerCase();
 
-            if (celebrationRepository.existsByPublicSlug(publicSlug)) {
+            if (cardRepository.existsByPublicSlug(publicSlug)) {
                 throw new BadRequestException(
                         "That custom slug is already in use"
                 );
             }
         }
 
-        Celebration celebration = new Celebration();
+        Card card = new Card();
 
-        celebration.setTitle(request.getTitle());
-        celebration.setRecipientName(request.getRecipientName());
-        celebration.setRecipientEmail(request.getRecipientEmail());
-        celebration.setRecipientPhone(request.getRecipientPhone());
-        celebration.setOccasion(request.getOccasion());
-        celebration.setCustomOccasion(request.getCustomOccasion());
-        celebration.setMessage(request.getMessage());
-        celebration.setCoverImageUrl(request.getCoverImageUrl());
-        celebration.setStatus(
+        card.setTitle(request.getTitle());
+        card.setRecipientName(request.getRecipientName());
+        card.setRecipientEmail(request.getRecipientEmail());
+        card.setRecipientPhone(request.getRecipientPhone());
+        card.setOccasion(request.getOccasion());
+        card.setCustomOccasion(request.getCustomOccasion());
+        card.setMessage(request.getMessage());
+        card.setCoverImageUrl(request.getCoverImageUrl());
+        card.setStatus(
                 request.isSaveAsDraft()
                         ? Status.DRAFT
                         : Status.PUBLISHED
                 );
-        celebration.setCreator(creator);
-        celebration.setTemplate(template);
-        celebration.setPublicSlug(publicSlug);
+        card.setCreator(creator);
+        card.setTemplate(template);
+        card.setPublicSlug(publicSlug);
 
-        return celebrationRepository.save(celebration);
+        return cardRepository.save(card);
     }
 
-    public List<Celebration> getMyCelebrations() {
+    public List<Card> getMyCards() {
 
         User creator = getCurrentUser();
 
-        return celebrationRepository.findByCreator(creator);
+        return cardRepository.findByCreator(creator);
     }
 
-    public Celebration getCelebrationBySlug(String slug) {
+    public Card getCardBySlug(String slug) {
 
-        return celebrationRepository
+        return cardRepository
                 .findByPublicSlug(slug)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Celebration not found")
+                        new ResourceNotFoundException("Card not found")
                 );
     }
 
-    public Celebration updateCelebration(
+    public Card updateCard(
             UUID id,
-            UpdateCelebrationRequest request
+            UpdateCardRequest request
     ) {
 
         User currentUser = getCurrentUser();
 
-        Celebration celebration = celebrationRepository
+        Card card = cardRepository
                 .findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Celebration not found")
+                        new ResourceNotFoundException("Card not found")
                 );
 
-        if (!celebration.getCreator()
+        if (!card.getCreator()
                 .getId()
                 .equals(currentUser.getId())) {
 
             throw new ForbiddenException(
-                    "You are not allowed to update this celebration"
+                    "You are not allowed to update this card"
             );
         }
 
 
         if (request.getTitle() != null) {
-            celebration.setTitle(request.getTitle());
+            card.setTitle(request.getTitle());
         }
 
         if (request.getRecipientName() != null) {
-            celebration.setRecipientName(
+            card.setRecipientName(
                     request.getRecipientName()
             );
         }
 
         if (request.getRecipientEmail() != null) {
-            celebration.setRecipientEmail(
+            card.setRecipientEmail(
                     request.getRecipientEmail()
             );
         }
 
         if (request.getRecipientPhone() != null) {
-            celebration.setRecipientPhone(
+            card.setRecipientPhone(
                     request.getRecipientPhone()
             );
         }
 
         if (request.getOccasion() != null) {
-            celebration.setOccasion(
+            card.setOccasion(
                     request.getOccasion()
             );
         }
 
         if (request.getCustomOccasion() != null) {
-            celebration.setCustomOccasion(
+            card.setCustomOccasion(
                     request.getCustomOccasion()
             );
         }
 
         if (request.getMessage() != null) {
-            celebration.setMessage(request.getMessage());
+            card.setMessage(request.getMessage());
         }
 
         if (request.getCoverImageUrl() != null) {
-            celebration.setCoverImageUrl(
+            card.setCoverImageUrl(
                 request.getCoverImageUrl()
             );
         }
 
         if (request.getTemplateId() != null) {
 
-            Template template = templateRepository
+            CardTemplate template = cardTemplateRepository
                     .findById(request.getTemplateId())
                     .orElseThrow(() ->
                         new ResourceNotFoundException("Template not found")
                     );
 
-            celebration.setTemplate(template);
+            card.setTemplate(template);
         }
 
         if (request.getCustomSlug() != null
@@ -201,8 +201,8 @@ public class CelebrationService {
                     .toLowerCase();
 
             if (!newSlug.equals(
-                    celebration.getPublicSlug()
-            ) && celebrationRepository
+                    card.getPublicSlug()
+            ) && cardRepository
                     .existsByPublicSlug(newSlug)) {
 
                 throw new BadRequestException(
@@ -210,50 +210,50 @@ public class CelebrationService {
                 );
             }
 
-            celebration.setPublicSlug(newSlug);
+            card.setPublicSlug(newSlug);
         }
 
-        return celebrationRepository.save(celebration);
+        return cardRepository.save(card);
     }
 
-    public Celebration publishCelebration(UUID id) {
+    public Card publishCard(UUID id) {
 
-        Celebration celebration = getOwnedCelebration(id);
+        Card card = getOwnedCard(id);
 
-        celebration.setStatus(Status.PUBLISHED);
+        card.setStatus(Status.PUBLISHED);
 
-        return celebrationRepository.save(celebration);
+        return cardRepository.save(card);
     }
 
-    public Celebration archiveCelebration(UUID id) {
+    public Card archiveCard(UUID id) {
 
-        Celebration celebration = getOwnedCelebration(id);
+        Card card = getOwnedCard(id);
 
-        celebration.setStatus(Status.ARCHIVED);
+        card.setStatus(Status.ARCHIVED);
 
-        return celebrationRepository.save(celebration);
+        return cardRepository.save(card);
     }
 
-    private Celebration getOwnedCelebration(UUID id) {
+    private Card getOwnedCard(UUID id) {
 
         User currentUser = getCurrentUser();
 
-        Celebration celebration = celebrationRepository
+        Card card = cardRepository
                 .findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Celebration not found")
+                        new ResourceNotFoundException("Card not found")
                 );
 
-        if (!celebration.getCreator()
+        if (!card.getCreator()
                 .getId()
                 .equals(currentUser.getId())) {
 
             throw new ForbiddenException(
-                    "You are not allowed to modify this celebration"
+                    "You are not allowed to modify this card"
             );
         }
 
-        return celebration;
+        return card;
     }
 
     private User getCurrentUser() {
@@ -283,7 +283,7 @@ public class CelebrationService {
     }
 
     private void validateCustomOccasion(
-            CreateCelebrationRequest request
+            CreateCardRequest request
     ) {
 
         if (request.getOccasion().name().equals("CUSTOM")
@@ -314,7 +314,7 @@ public class CelebrationService {
             slug = builder.toString();
 
         } while (
-                celebrationRepository.existsByPublicSlug(slug)
+                cardRepository.existsByPublicSlug(slug)
         );
 
         return slug;
