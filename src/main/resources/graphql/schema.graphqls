@@ -203,17 +203,12 @@ input UpdateCardInput {
 # =========================================================
 
 type CardTemplate {
-
     id: ID!
-
     name: String!
-
     style: TemplateStyle!
-
+    templateKey: String!
     previewImageUrl: String!
-
     occasion: Occasion!
-
     active: Boolean!
 }
 

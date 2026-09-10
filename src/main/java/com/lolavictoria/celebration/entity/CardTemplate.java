@@ -30,6 +30,9 @@ public class CardTemplate {
     @Column(nullable = false)
     private boolean active;
 
+    @Column(nullable = false, unique = true)
+    private String templateKey;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -58,6 +61,8 @@ public class CardTemplate {
     public CardTemplateStyle getStyle() {
         return style;
     }
+
+    
 
     public void setStyle(CardTemplateStyle style) {
         this.style = style;
@@ -115,4 +120,12 @@ public class CardTemplate {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+	public String getTemplateKey() {
+		return templateKey;
+	}
+
+	public void setTemplateKey(String templateKey) {
+		this.templateKey = templateKey;
+	}
 }
