@@ -21,7 +21,7 @@ type Query {
     # -------------------------
     # Websites
     # -------------------------
-
+    websiteBySlug(slug: String!): Website
     websiteTemplates(occasion: Occasion): [WebsiteTemplate!]!
 
     websiteTemplateById(id: ID!): WebsiteTemplate
@@ -77,6 +77,9 @@ type Mutation {
         input: CreateWebsiteInput!
     ): Website!
 
+    updateWebsite(id: ID!, input: UpdateWebsiteInput!): Website!
+    publishWebsite(id: ID!): Website!
+    archiveWebsite(id: ID!): Website!
 
     # -------------------------
     # Media
@@ -220,28 +223,19 @@ type CardTemplate {
 # =========================================================
 
 type Website {
-
     id: ID!
-
     title: String!
-
     recipientName: String!
-
     recipientEmail: String
-
     recipientPhone: String
-
     occasion: Occasion!
-
     customOccasion: String
-
     status: Status!
-
     publicSlug: String!
-
     content: JSON
-
     template: WebsiteTemplate!
+    createdAt: String!
+    updatedAt: String!
 }
 
 
@@ -261,6 +255,17 @@ input CreateWebsiteInput {
 
     templateId: ID!
 
+    content: JSON
+}
+
+input UpdateWebsiteInput {
+    title: String
+    recipientName: String
+    recipientEmail: String
+    recipientPhone: String
+    occasion: Occasion
+    customOccasion: String
+    templateId: ID
     content: JSON
 }
 
@@ -285,15 +290,10 @@ type WebsiteTemplate {
 # =========================================================
 
 type WebsiteSection {
-
     id: ID!
-
     name: String!
-
     sectionKey: String!
-
     displayOrder: Int!
-
     fieldSchema: JSON
 }
 

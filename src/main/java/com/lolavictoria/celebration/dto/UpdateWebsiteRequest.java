@@ -1,0 +1,85 @@
+package com.lolavictoria.celebration.dto;
+
+import com.lolavictoria.celebration.entity.Occasion;
+
+import java.util.Map;
+import java.util.UUID;
+
+public class UpdateWebsiteRequest {
+
+    private String title;
+    private String recipientName;
+    private String recipientEmail;
+    private String recipientPhone;
+
+    private Occasion occasion;
+    private String customOccasion;
+
+    private UUID templateId;
+
+    private Map<String, Object> content;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public String getRecipientEmail() {
+        return recipientEmail;
+    }
+
+    public void setRecipientEmail(String recipientEmail) {
+        this.recipientEmail = recipientEmail;
+    }
+
+    public String getRecipientPhone() {
+        return recipientPhone;
+    }
+
+    public void setRecipientPhone(String recipientPhone) {
+        this.recipientPhone = recipientPhone;
+    }
+
+    public Occasion getOccasion() {
+        return occasion;
+    }
+
+    public void setOccasion(Occasion occasion) {
+        this.occasion = occasion;
+    }
+
+    public String getCustomOccasion() {
+        return customOccasion;
+    }
+
+    public void setCustomOccasion(String customOccasion) {
+        this.customOccasion = customOccasion;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(UUID templateId) {
+        this.templateId = templateId;
+    }
+
+    public Map<String, Object> getContent() {
+        return content;
+    }
+
+    public void setContent(Map<String, Object> content) {
+        this.content = content;
+    }
+}
