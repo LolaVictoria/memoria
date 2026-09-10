@@ -13,10 +13,9 @@ type Query {
     # Cards
     # -------------------------
 
-    celebrations: [Card!]!
-
+    cards: [Card!]!
     cardBySlug(slug: String!): Card
-
+    cardTemplateById(id: ID!): CardTemplate
     cardTemplates(occasion: Occasion): [CardTemplate!]!
 
     # -------------------------
@@ -25,7 +24,7 @@ type Query {
 
     websiteTemplates(occasion: Occasion): [WebsiteTemplate!]!
 
-    websiteTemplate(id: ID!): WebsiteTemplate
+    websiteTemplateById(id: ID!): WebsiteTemplate
 }
 
 
@@ -271,19 +270,12 @@ input CreateWebsiteInput {
 # =========================================================
 
 type WebsiteTemplate {
-
     id: ID!
-
     name: String!
-
     style: TemplateStyle!
-
     previewImageUrl: String!
-
     occasion: Occasion!
-
     active: Boolean!
-
     websiteSections: [WebsiteSection!]!
 }
 

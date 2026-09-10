@@ -3,11 +3,9 @@ package com.lolavictoria.celebration.resolver;
 import com.lolavictoria.celebration.entity.Occasion;
 import com.lolavictoria.celebration.entity.WebsiteTemplate;
 import com.lolavictoria.celebration.service.WebsiteTemplateService;
-
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +30,7 @@ public class WebsiteTemplateResolver {
     }
 
     @QueryMapping
-    public WebsiteTemplate websiteTemplate(
+    public WebsiteTemplate websiteTemplateById(
             @Argument UUID id
     ) {
         return templateService.getTemplateById(id);
