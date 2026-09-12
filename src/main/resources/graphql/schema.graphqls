@@ -251,6 +251,8 @@
         templateId: ID!
 
         content: JSON
+
+        duration: WebsiteDuration!
     }
 
     input UpdateWebsiteInput {

@@ -1,6 +1,7 @@
 package com.lolavictoria.celebration.dto;
 
 import com.lolavictoria.celebration.entity.Occasion;
+import com.lolavictoria.celebration.entity.WebsiteDuration;
 
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +16,7 @@ public class CreateWebsiteRequest {
     private String customOccasion;
     private UUID templateId;
     private Map<String, Object> content;
+	private WebsiteDuration duration;
 
     public CreateWebsiteRequest() {}
 
@@ -80,6 +82,14 @@ public class CreateWebsiteRequest {
 
 	public void setContent(Map<String, Object> content) {
 		this.content = content;
+	}
+
+	public WebsiteDuration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(WebsiteDuration duration) {
+		this.duration = duration;
 	}
 
     // getters and setters

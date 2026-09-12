@@ -66,7 +66,7 @@ public class WebsiteService {
         website.setContent(request.getContent());
 
         website.setStatus(Status.DRAFT);
-        website.setDuration(WebsiteDuration.DAYS_7);
+        website.setDuration(request.getDuration());
         website.setPublicSlug(generateSlug());
 
         return websiteRepository.save(website);
