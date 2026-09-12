@@ -6,7 +6,7 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "templates")
+@Table(name = "card_templates")
 public class CardTemplate {
 
     @Id
