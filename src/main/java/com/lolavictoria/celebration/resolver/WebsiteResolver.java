@@ -4,14 +4,13 @@ import com.lolavictoria.celebration.dto.CreateWebsiteRequest;
 import com.lolavictoria.celebration.dto.UpdateWebsiteRequest;
 import com.lolavictoria.celebration.entity.User;
 import com.lolavictoria.celebration.entity.Website;
+import com.lolavictoria.celebration.repository.UserRepository;
 import com.lolavictoria.celebration.service.WebsiteService;
 
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-
 import org.springframework.security.core.Authentication;
-
 import org.springframework.stereotype.Controller;
 
 import java.util.UUID;
@@ -20,13 +19,15 @@ import java.util.UUID;
 public class WebsiteResolver {
 
     private final WebsiteService websiteService;
+    private final UserRepository userRepository;
 
     public WebsiteResolver(
-            WebsiteService websiteService
+            WebsiteService websiteService,
+            UserRepository userRepository
     ) {
         this.websiteService = websiteService;
+        this.userRepository = userRepository;
     }
-
 
     // =========================
     // CREATE WEBSITE
@@ -38,15 +39,13 @@ public class WebsiteResolver {
             Authentication authentication
     ) {
 
-        User creator =
-                (User) authentication.getPrincipal();
+        User creator = getAuthenticatedUser(authentication);
 
         return websiteService.createWebsite(
                 input,
                 creator
         );
     }
-
 
     // =========================
     // UPDATE WEBSITE
@@ -59,8 +58,7 @@ public class WebsiteResolver {
             Authentication authentication
     ) {
 
-        User creator =
-                (User) authentication.getPrincipal();
+        User creator = getAuthenticatedUser(authentication);
 
         return websiteService.updateWebsite(
                 id,
@@ -69,15 +67,24 @@ public class WebsiteResolver {
         );
     }
 
-    @QueryMapping
-public Website websiteById(
-        @Argument UUID id,
-        Authentication authentication
-) {
-    User creator = (User) authentication.getPrincipal();
+    // =========================
+    // WEBSITE BY ID
+    // =========================
 
-    return websiteService.getWebsiteById(id, creator);
-}
+    @QueryMapping
+    public Website websiteById(
+            @Argument UUID id,
+            Authentication authentication
+    ) {
+
+        User creator = getAuthenticatedUser(authentication);
+
+        return websiteService.getWebsiteById(
+                id,
+                creator
+        );
+    }
+
     // =========================
     // PUBLISH WEBSITE
     // =========================
@@ -88,15 +95,13 @@ public Website websiteById(
             Authentication authentication
     ) {
 
-        User creator =
-                (User) authentication.getPrincipal();
+        User creator = getAuthenticatedUser(authentication);
 
         return websiteService.publishWebsite(
                 id,
                 creator
         );
     }
-
 
     // =========================
     // ARCHIVE WEBSITE
@@ -108,15 +113,13 @@ public Website websiteById(
             Authentication authentication
     ) {
 
-        User creator =
-                (User) authentication.getPrincipal();
+        User creator = getAuthenticatedUser(authentication);
 
         return websiteService.archiveWebsite(
                 id,
                 creator
         );
     }
-
 
     // =========================
     // PUBLIC WEBSITE
@@ -130,5 +133,21 @@ public Website websiteById(
         return websiteService.getWebsiteBySlug(
                 slug
         );
+    }
+
+    // =========================
+    // AUTHENTICATED USER
+    // =========================
+
+    private User getAuthenticatedUser(
+            Authentication authentication
+    ) {
+
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Authenticated user not found")
+                );
     }
 }
