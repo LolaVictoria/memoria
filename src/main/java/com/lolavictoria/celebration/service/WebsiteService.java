@@ -143,6 +143,9 @@ public class WebsiteService {
         return websiteRepository.save(website);
     }
 
+    public Website getWebsiteById(UUID id, User creator) {
+        return getWebsiteForCreator(id, creator);
+}
 
     // =========================
     // PUBLISH

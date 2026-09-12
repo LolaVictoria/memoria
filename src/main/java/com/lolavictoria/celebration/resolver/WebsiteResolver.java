@@ -69,7 +69,15 @@ public class WebsiteResolver {
         );
     }
 
+    @QueryMapping
+public Website websiteById(
+        @Argument UUID id,
+        Authentication authentication
+) {
+    User creator = (User) authentication.getPrincipal();
 
+    return websiteService.getWebsiteById(id, creator);
+}
     // =========================
     // PUBLISH WEBSITE
     // =========================

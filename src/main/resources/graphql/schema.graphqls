@@ -25,6 +25,7 @@ type Query {
     websiteTemplates(occasion: Occasion): [WebsiteTemplate!]!
 
     websiteTemplateById(id: ID!): WebsiteTemplate
+    websiteById(id: ID!): Website
 }
 
 
