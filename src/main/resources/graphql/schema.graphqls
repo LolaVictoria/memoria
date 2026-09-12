@@ -311,20 +311,40 @@ enum TemplateStyle {
     BOLD
 }
 
+package com.lolavictoria.celebration.entity;
+public enum Occasion {
 
-enum Occasion {
+    BIRTHDAY,
 
-    BIRTHDAY
+    WEDDING,
+    ANNIVERSARY,
+    ENGAGEMENT,
 
-    WEDDING
+    GRADUATION,
+    ACHIEVEMENT,
+    PROMOTION,
+    NEW_JOB,
 
-    ANNIVERSARY
+    APPRECIATION,
+    THANK_YOU,
+    CONGRATULATIONS,
 
-    GRADUATION
+    RETIREMENT,
 
-    APPRECIATION
+    BABY_SHOWER,
+    NEW_BABY,
 
-    RETIREMENT
+    VALENTINES_DAY,
+    MOTHERS_DAY,
+    FATHERS_DAY,
+
+    FRIENDSHIP,
+
+    GET_WELL,
+    FAREWELL,
+    NEW_HOME,
+
+    HOLIDAY,
 
     CUSTOM
 }
