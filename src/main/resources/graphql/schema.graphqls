@@ -311,7 +311,7 @@ enum TemplateStyle {
     BOLD
 }
 
-public enum Occasion {
+enum Occasion {
     BIRTHDAY,
     WEDDING,
     ANNIVERSARY,
