@@ -337,6 +337,7 @@
         DRAFT
         PUBLISHED
         ARCHIVED
+        EXPIRED
     }
 
     enum WebsiteDuration {
