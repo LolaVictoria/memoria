@@ -9,6 +9,8 @@ import com.lolavictoria.celebration.entity.WebsiteTemplate;
 import com.lolavictoria.celebration.repository.WebsiteRepository;
 import com.lolavictoria.celebration.repository.WebsiteTemplateRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
 import com.lolavictoria.celebration.entity.WebsiteDuration;
 import com.lolavictoria.celebration.entity.WebsiteVersion;
@@ -24,7 +26,7 @@ public class WebsiteService {
     private final WebsiteRepository websiteRepository;
     private final WebsiteTemplateRepository templateRepository;
     private final WebsiteVersionRepository websiteVersionRepository;
-
+    
     public WebsiteService(
         WebsiteRepository websiteRepository,
         WebsiteTemplateRepository templateRepository,
@@ -153,89 +155,93 @@ public class WebsiteService {
 
     public Website getWebsiteById(UUID id, User creator) {
         return getWebsiteForCreator(id, creator);
-}
+     }
+
+     public List<Website> getWebsitesForCreator(User creator) {
+        return websiteRepository.findByCreatorId(creator.getId());
+     }
 
     // =========================
     // PUBLISH
     // =========================
 
     @Transactional
-public Website publishWebsite(
-        UUID websiteId,
-        User creator
-) {
+        public Website publishWebsite(
+                UUID websiteId,
+                User creator
+        ) {
 
-    Website website = getWebsiteForCreator(
-            websiteId,
-            creator
-    );
-
-    if (website.getStatus() == Status.ARCHIVED) {
-        throw new RuntimeException(
-                "Archived websites cannot be published"
+        Website website = getWebsiteForCreator(
+                websiteId,
+                creator
         );
-    }
 
-    if (website.getContent() == null) {
-        throw new RuntimeException(
-                "Website has no content to publish"
-        );
-    }
+        if (website.getStatus() == Status.ARCHIVED) {
+                throw new RuntimeException(
+                        "Archived websites cannot be published"
+                );
+        }
 
-    WebsiteVersion previousVersion =
-            websiteVersionRepository
-                    .findTopByWebsiteIdOrderByVersionNumberDesc(
-                            websiteId
-                    )
-                    .orElse(null);
+        if (website.getContent() == null) {
+                throw new RuntimeException(
+                        "Website has no content to publish"
+                );
+        }
 
-    int nextVersionNumber =
-            previousVersion == null
-                    ? 1
-                    : previousVersion.getVersionNumber() + 1;
+        WebsiteVersion previousVersion =
+                websiteVersionRepository
+                        .findTopByWebsiteIdOrderByVersionNumberDesc(
+                                websiteId
+                        )
+                        .orElse(null);
 
-    WebsiteVersion newVersion = new WebsiteVersion();
+        int nextVersionNumber =
+                previousVersion == null
+                        ? 1
+                        : previousVersion.getVersionNumber() + 1;
 
-    newVersion.setWebsite(website);
-    newVersion.setVersionNumber(nextVersionNumber);
+        WebsiteVersion newVersion = new WebsiteVersion();
 
-    // Freeze the current draft into this published snapshot
-    newVersion.setContent(website.getContent());
+        newVersion.setWebsite(website);
+        newVersion.setVersionNumber(nextVersionNumber);
 
-    newVersion.setTemplate(website.getTemplate());
+        // Freeze the current draft into this published snapshot
+        newVersion.setContent(website.getContent());
 
-    newVersion =
-            websiteVersionRepository.save(newVersion);
+        newVersion.setTemplate(website.getTemplate());
 
-    // This is now the version visitors should see
-    website.setPublishedVersion(newVersion);
+        newVersion =
+                websiteVersionRepository.save(newVersion);
 
-    website.setStatus(Status.PUBLISHED);
+        // This is now the version visitors should see
+        website.setPublishedVersion(newVersion);
 
-    /*
-     * Only calculate the expiry when publishing
-     * for the first time.
-     *
-     * Editing and saving changes later does NOT
-     * extend the website's lifetime.
-     */
-    if (website.getPublishedAt() == null) {
+        website.setStatus(Status.PUBLISHED);
 
-        LocalDateTime publishedAt =
-                LocalDateTime.now();
+        /*
+        * Only calculate the expiry when publishing
+        * for the first time.
+        *
+        * Editing and saving changes later does NOT
+        * extend the website's lifetime.
+        */
+        if (website.getPublishedAt() == null) {
 
-        website.setPublishedAt(publishedAt);
+                LocalDateTime publishedAt =
+                        LocalDateTime.now();
 
-        website.setExpiresAt(
-                calculateExpiry(
-                        publishedAt,
-                        website.getDuration()
-                )
-        );
-    }
+                website.setPublishedAt(publishedAt);
 
-    return websiteRepository.save(website);
-}
+                website.setExpiresAt(
+                        calculateExpiry(
+                                publishedAt,
+                                website.getDuration()
+                        )
+                );
+        }
+
+        return websiteRepository.save(website);
+        }
     // =========================
     // ARCHIVE
     // =========================

@@ -13,6 +13,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -150,4 +151,15 @@ public class WebsiteResolver {
                         new RuntimeException("Authenticated user not found")
                 );
     }
+
+
+    @QueryMapping
+        public List<Website> websites(
+                Authentication authentication
+        ) {
+
+        User creator = getAuthenticatedUser(authentication);
+
+        return websiteService.getWebsitesForCreator(creator);
+        }
 }
