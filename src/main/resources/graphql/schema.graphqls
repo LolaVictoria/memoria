@@ -1,367 +1,365 @@
-scalar JSON
+    scalar JSON
 
-# =========================================================
-# QUERY
-# =========================================================
+    # =========================================================
+    # QUERY
+    # =========================================================
 
-type Query {
-    _health: String
+    type Query {
+        _health: String
 
-    me: User
+        me: User
 
-    # -------------------------
-    # Cards
-    # -------------------------
+        cards: [Card!]!
+        cardBySlug(slug: String!): Card
+        cardTemplateById(id: ID!): CardTemplate
+        cardTemplates(occasion: Occasion): [CardTemplate!]!
 
-    cards: [Card!]!
-    cardBySlug(slug: String!): Card
-    cardTemplateById(id: ID!): CardTemplate
-    cardTemplates(occasion: Occasion): [CardTemplate!]!
-
-    # -------------------------
-    # Websites
-    # -------------------------
-    websiteBySlug(slug: String!): Website
-    websiteTemplates(occasion: Occasion): [WebsiteTemplate!]!
-
-    websiteTemplateById(id: ID!): WebsiteTemplate
-    websiteById(id: ID!): Website
-}
+        websiteBySlug(slug: String!): Website
+        websiteTemplates(occasion: Occasion): [WebsiteTemplate!]!
+        websiteTemplateById(id: ID!): WebsiteTemplate
+        websiteById(id: ID!): Website
+    }
 
 
-# =========================================================
-# MUTATION
-# =========================================================
+    # =========================================================
+    # MUTATION
+    # =========================================================
 
-type Mutation {
+    type Mutation {
+        createUser(input: CreateUserInput!): User!
+        login(input: LoginInput!): User!
+        verifyEmail(token: String!): User!
+        logout: Boolean!
 
-    # -------------------------
-    # Authentication
-    # -------------------------
+        createCard(
+            input: CreateCardInput!
+        ): Card!
 
-    createUser(input: CreateUserInput!): User!
+        updateCard(
+            id: ID!
+            input: UpdateCardInput!
+        ): Card!
 
-    login(input: LoginInput!): User!
+        publishCard(
+            id: ID!
+        ): Card!
 
-    verifyEmail(token: String!): User!
+        archiveCard(
+            id: ID!
+        ): Card!
 
-    logout: Boolean!
+
+        # -------------------------
+        # Websites
+        # -------------------------
+
+        createWebsite(
+            input: CreateWebsiteInput!
+        ): Website!
+
+        updateWebsite(id: ID!, input: UpdateWebsiteInput!): Website!
+        publishWebsite(id: ID!): Website!
+        archiveWebsite(id: ID!): Website!
+
+        # -------------------------
+        # Media
+        # -------------------------
+
+        generateCloudinaryUploadSignature: CloudinaryUploadSignature!
+    }
 
 
-    # -------------------------
-    # Cards
-    # -------------------------
+    # =========================================================
+    # USER
+    # =========================================================
 
-    createCard(
-        input: CreateCardInput!
-    ): Card!
+    input CreateUserInput {
+        name: String!
+        email: String!
+        password: String!
+    }
 
-    updateCard(
+
+    input LoginInput {
+        email: String!
+        password: String!
+    }
+
+
+    type User {
         id: ID!
-        input: UpdateCardInput!
-    ): Card!
+        name: String!
+        email: String!
+    }
 
-    publishCard(
+
+    # =========================================================
+    # CARD
+    # =========================================================
+
+    type Card {
         id: ID!
-    ): Card!
 
-    archiveCard(
+        title: String!
+
+        recipientName: String!
+
+        recipientEmail: String
+
+        recipientPhone: String
+
+        occasion: Occasion!
+
+        customOccasion: String
+
+        message: String
+
+        coverImageUrl: String
+
+        status: Status!
+
+        template: CardTemplate
+
+        publicSlug: String!
+
+        createdAt: String!
+
+        updatedAt: String!
+    }
+
+
+    input CreateCardInput {
+
+        title: String!
+
+        recipientName: String!
+
+        recipientEmail: String
+
+        recipientPhone: String
+
+        occasion: Occasion!
+
+        customOccasion: String
+
+        message: String
+
+        coverImageUrl: String
+
+        templateId: ID
+
+        customSlug: String
+
+        saveAsDraft: Boolean!
+    }
+
+
+    input UpdateCardInput {
+
+        title: String
+
+        recipientName: String
+
+        recipientEmail: String
+
+        recipientPhone: String
+
+        occasion: Occasion
+
+        customOccasion: String
+
+        message: String
+
+        coverImageUrl: String
+
+        templateId: ID
+
+        customSlug: String
+    }
+
+
+    # =========================================================
+    # CARD TEMPLATE
+    # =========================================================
+
+    type CardTemplate {
         id: ID!
-    ): Card!
+        name: String!
+        style: TemplateStyle!
+        templateKey: String!
+        previewImageUrl: String!
+        occasion: Occasion!
+        active: Boolean!
+    }
+
 
+    # =========================================================
+    # WEBSITE
+    # =========================================================
 
-    # -------------------------
-    # Websites
-    # -------------------------
-
-    createWebsite(
-        input: CreateWebsiteInput!
-    ): Website!
-
-    updateWebsite(id: ID!, input: UpdateWebsiteInput!): Website!
-    publishWebsite(id: ID!): Website!
-    archiveWebsite(id: ID!): Website!
-
-    # -------------------------
-    # Media
-    # -------------------------
-
-    generateCloudinaryUploadSignature: CloudinaryUploadSignature!
-}
-
-
-# =========================================================
-# USER
-# =========================================================
-
-input CreateUserInput {
-    name: String!
-    email: String!
-    password: String!
-}
-
-
-input LoginInput {
-    email: String!
-    password: String!
-}
-
-
-type User {
-    id: ID!
-    name: String!
-    email: String!
-}
-
-
-# =========================================================
-# CARD
-# =========================================================
-
-type Card {
-    id: ID!
-
-    title: String!
-
-    recipientName: String!
-
-    recipientEmail: String
-
-    recipientPhone: String
-
-    occasion: Occasion!
-
-    customOccasion: String
-
-    message: String
-
-    coverImageUrl: String
-
-    status: Status!
-
-    template: CardTemplate
-
-    publicSlug: String!
-
-    createdAt: String!
-
-    updatedAt: String!
-}
-
-
-input CreateCardInput {
-
-    title: String!
-
-    recipientName: String!
-
-    recipientEmail: String
-
-    recipientPhone: String
-
-    occasion: Occasion!
-
-    customOccasion: String
-
-    message: String
-
-    coverImageUrl: String
-
-    templateId: ID
-
-    customSlug: String
-
-    saveAsDraft: Boolean!
-}
-
-
-input UpdateCardInput {
-
-    title: String
-
-    recipientName: String
-
-    recipientEmail: String
-
-    recipientPhone: String
-
-    occasion: Occasion
-
-    customOccasion: String
-
-    message: String
-
-    coverImageUrl: String
-
-    templateId: ID
-
-    customSlug: String
-}
-
-
-# =========================================================
-# CARD TEMPLATE
-# =========================================================
-
-type CardTemplate {
-    id: ID!
-    name: String!
-    style: TemplateStyle!
-    templateKey: String!
-    previewImageUrl: String!
-    occasion: Occasion!
-    active: Boolean!
-}
-
-
-# =========================================================
-# WEBSITE
-# =========================================================
-
-type Website {
-    id: ID!
-    title: String!
-    recipientName: String!
-    recipientEmail: String
-    recipientPhone: String
-    occasion: Occasion!
-    customOccasion: String
-    status: Status!
-    publicSlug: String!
-    content: JSON
-    template: WebsiteTemplate!
-    createdAt: String!
-    updatedAt: String!
-}
-
-
-input CreateWebsiteInput {
-
-    title: String!
-
-    recipientName: String!
-
-    recipientEmail: String
-
-    recipientPhone: String
-
-    occasion: Occasion!
-
-    customOccasion: String
-
-    templateId: ID!
-
-    content: JSON
-}
-
-input UpdateWebsiteInput {
-    title: String
-    recipientName: String
-    recipientEmail: String
-    recipientPhone: String
-    occasion: Occasion
-    customOccasion: String
-    templateId: ID
-    content: JSON
-}
-
-
-# =========================================================
-# WEBSITE TEMPLATE
-# =========================================================
-
-type WebsiteTemplate {
-    id: ID!
-    name: String!
-    style: TemplateStyle!
-    previewImageUrl: String!
-    occasion: Occasion!
-    active: Boolean!
-    websiteSections: [WebsiteSection!]!
-}
-
-
-# =========================================================
-# WEBSITE SECTION
-# =========================================================
-
-type WebsiteSection {
-    id: ID!
-    name: String!
-    sectionKey: String!
-    displayOrder: Int!
-    fieldSchema: JSON
-}
-
-
-# =========================================================
-# SHARED ENUMS
-# =========================================================
-
-enum TemplateStyle {
-
-    EDITORIAL
-
-    PHOTO
-
-    PLAYFUL
-
-    ELEGANT
-
-    BOLD
-}
-
-enum Occasion {
-    BIRTHDAY,
-    WEDDING,
-    ANNIVERSARY,
-    ENGAGEMENT,
-    GRADUATION,
-    ACHIEVEMENT,
-    PROMOTION,
-    NEW_JOB,
-    APPRECIATION,
-    THANK_YOU,
-    CONGRATULATIONS,
-    RETIREMENT,
-    BABY_SHOWER,
-    NEW_BABY,
-    VALENTINES_DAY,
-    MOTHERS_DAY,
-    FATHERS_DAY,
-    FRIENDSHIP,
-    GET_WELL,
-    FAREWELL,
-    NEW_HOME,
-    HOLIDAY,
-
-    CUSTOM
-}
-
-
-enum Status {
-
-    DRAFT
-
-    PUBLISHED
-
-    ARCHIVED
-}
-
-
-# =========================================================
-# CLOUDINARY
-# =========================================================
-
-type CloudinaryUploadSignature {
-
-    signature: String!
-
-    timestamp: String!
-
-    apiKey: String!
-
-    cloudName: String!
-
-    folder: String!
-}
+    type Website {
+        id: ID!
+        title: String!
+        recipientName: String!
+        recipientEmail: String
+        recipientPhone: String
+        occasion: Occasion!
+        customOccasion: String
+        status: Status!
+        publicSlug: String!
+
+        # Current draft
+        content: JSON
+
+        template: WebsiteTemplate!
+
+        # Publishing / expiry
+        duration: WebsiteDuration
+        publishedAt: String
+        expiresAt: String
+
+        # Currently live published snapshot
+        publishedVersion: WebsiteVersion
+
+        createdAt: String!
+        updatedAt: String!
+    }
+
+    type WebsiteVersion {
+        id: ID!
+        versionNumber: Int!
+        content: JSON!
+        template: WebsiteTemplate!
+        createdAt: String!
+    }
+
+
+    input CreateWebsiteInput {
+
+        title: String!
+
+        recipientName: String!
+
+        recipientEmail: String
+
+        recipientPhone: String
+
+        occasion: Occasion!
+
+        customOccasion: String
+
+        templateId: ID!
+
+        content: JSON
+    }
+
+    input UpdateWebsiteInput {
+        title: String
+        recipientName: String
+        recipientEmail: String
+        recipientPhone: String
+        occasion: Occasion
+        customOccasion: String
+        templateId: ID
+        content: JSON
+    }
+
+
+    # =========================================================
+    # WEBSITE TEMPLATE
+    # =========================================================
+
+    type WebsiteTemplate {
+        id: ID!
+        name: String!
+        style: TemplateStyle!
+        previewImageUrl: String!
+        occasion: Occasion!
+        active: Boolean!
+        websiteSections: [WebsiteSection!]!
+    }
+
+
+    # =========================================================
+    # WEBSITE SECTION
+    # =========================================================
+
+    type WebsiteSection {
+        id: ID!
+        name: String!
+        sectionKey: String!
+        displayOrder: Int!
+        fieldSchema: JSON
+    }
+
+
+    # =========================================================
+    # SHARED ENUMS
+    # =========================================================
+
+    enum TemplateStyle {
+        EDITORIAL
+        PHOTO
+        PLAYFUL
+        ELEGANT
+        BOLD
+    }
+
+    enum Occasion {
+        BIRTHDAY,
+        WEDDING,
+        ANNIVERSARY,
+        ENGAGEMENT,
+        GRADUATION,
+        ACHIEVEMENT,
+        PROMOTION,
+        NEW_JOB,
+        APPRECIATION,
+        THANK_YOU,
+        CONGRATULATIONS,
+        RETIREMENT,
+        BABY_SHOWER,
+        NEW_BABY,
+        VALENTINES_DAY,
+        MOTHERS_DAY,
+        FATHERS_DAY,
+        FRIENDSHIP,
+        GET_WELL,
+        FAREWELL,
+        NEW_HOME,
+        HOLIDAY,
+
+        CUSTOM
+    }
+
+
+    enum Status {
+        DRAFT
+        PUBLISHED
+        ARCHIVED
+    }
+
+    enum WebsiteDuration {
+        HOURS_24
+        HOURS_72
+        DAYS_7
+        DAYS_365
+    }
+
+
+    # =========================================================
+    # CLOUDINARY
+    # =========================================================
+
+    type CloudinaryUploadSignature {
+
+        signature: String!
+
+        timestamp: String!
+
+        apiKey: String!
+
+        cloudName: String!
+
+        folder: String!
+    }

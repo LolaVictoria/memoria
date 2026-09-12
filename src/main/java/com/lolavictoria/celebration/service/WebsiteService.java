@@ -8,24 +8,32 @@ import com.lolavictoria.celebration.entity.Website;
 import com.lolavictoria.celebration.entity.WebsiteTemplate;
 import com.lolavictoria.celebration.repository.WebsiteRepository;
 import com.lolavictoria.celebration.repository.WebsiteTemplateRepository;
-
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
+import com.lolavictoria.celebration.entity.WebsiteDuration;
+import com.lolavictoria.celebration.entity.WebsiteVersion;
+import com.lolavictoria.celebration.repository.WebsiteVersionRepository;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class WebsiteService {
 
     private final WebsiteRepository websiteRepository;
     private final WebsiteTemplateRepository templateRepository;
+    private final WebsiteVersionRepository websiteVersionRepository;
 
     public WebsiteService(
-            WebsiteRepository websiteRepository,
-            WebsiteTemplateRepository templateRepository
-    ) {
-        this.websiteRepository = websiteRepository;
-        this.templateRepository = templateRepository;
-    }
+        WebsiteRepository websiteRepository,
+        WebsiteTemplateRepository templateRepository,
+        WebsiteVersionRepository websiteVersionRepository
+) {
+    this.websiteRepository = websiteRepository;
+    this.templateRepository = templateRepository;
+    this.websiteVersionRepository = websiteVersionRepository;
+}
 
     // =========================
     // CREATE
@@ -58,7 +66,7 @@ public class WebsiteService {
         website.setContent(request.getContent());
 
         website.setStatus(Status.DRAFT);
-
+        website.setDuration(WebsiteDuration.DAYS_7);
         website.setPublicSlug(generateSlug());
 
         return websiteRepository.save(website);
@@ -151,28 +159,83 @@ public class WebsiteService {
     // PUBLISH
     // =========================
 
-    public Website publishWebsite(
-            UUID websiteId,
-            User creator
-    ) {
+    @Transactional
+public Website publishWebsite(
+        UUID websiteId,
+        User creator
+) {
 
-        Website website = getWebsiteForCreator(
-                websiteId,
-                creator
+    Website website = getWebsiteForCreator(
+            websiteId,
+            creator
+    );
+
+    if (website.getStatus() == Status.ARCHIVED) {
+        throw new RuntimeException(
+                "Archived websites cannot be published"
         );
-
-        if (website.getStatus() == Status.ARCHIVED) {
-            throw new RuntimeException(
-                    "Archived websites cannot be published"
-            );
-        }
-
-        website.setStatus(Status.PUBLISHED);
-
-        return websiteRepository.save(website);
     }
 
+    if (website.getContent() == null) {
+        throw new RuntimeException(
+                "Website has no content to publish"
+        );
+    }
 
+    WebsiteVersion previousVersion =
+            websiteVersionRepository
+                    .findTopByWebsiteIdOrderByVersionNumberDesc(
+                            websiteId
+                    )
+                    .orElse(null);
+
+    int nextVersionNumber =
+            previousVersion == null
+                    ? 1
+                    : previousVersion.getVersionNumber() + 1;
+
+    WebsiteVersion newVersion = new WebsiteVersion();
+
+    newVersion.setWebsite(website);
+    newVersion.setVersionNumber(nextVersionNumber);
+
+    // Freeze the current draft into this published snapshot
+    newVersion.setContent(website.getContent());
+
+    newVersion.setTemplate(website.getTemplate());
+
+    newVersion =
+            websiteVersionRepository.save(newVersion);
+
+    // This is now the version visitors should see
+    website.setPublishedVersion(newVersion);
+
+    website.setStatus(Status.PUBLISHED);
+
+    /*
+     * Only calculate the expiry when publishing
+     * for the first time.
+     *
+     * Editing and saving changes later does NOT
+     * extend the website's lifetime.
+     */
+    if (website.getPublishedAt() == null) {
+
+        LocalDateTime publishedAt =
+                LocalDateTime.now();
+
+        website.setPublishedAt(publishedAt);
+
+        website.setExpiresAt(
+                calculateExpiry(
+                        publishedAt,
+                        website.getDuration()
+                )
+        );
+    }
+
+    return websiteRepository.save(website);
+}
     // =========================
     // ARCHIVE
     // =========================
@@ -197,23 +260,22 @@ public class WebsiteService {
     // PUBLIC WEBSITE
     // =========================
 
-    public Website getWebsiteBySlug(
-            String slug
-    ) {
+     public Website getWebsiteBySlug(
+                String slug
+        ) {
 
         return websiteRepository
-                .findByPublicSlugAndStatus(
+                .findByPublicSlugAndStatusAndExpiresAtAfter(
                         slug,
-                        Status.PUBLISHED
+                        Status.PUBLISHED,
+                        LocalDateTime.now()
                 )
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Website not found"
                         )
                 );
-    }
-
-
+        }
     // =========================
     // CREATOR OWNERSHIP
     // =========================
@@ -249,8 +311,30 @@ public class WebsiteService {
 
 
     // =========================
-    // SLUG GENERATION
+    // HELPER FUNCTIONS
     // =========================
+
+
+    private LocalDateTime calculateExpiry(
+        LocalDateTime publishedAt,
+        WebsiteDuration duration
+        ) {
+
+        return switch (duration) {
+
+                case HOURS_24 ->
+                        publishedAt.plusHours(24);
+
+                case HOURS_72 ->
+                        publishedAt.plusHours(72);
+
+                case DAYS_7 ->
+                        publishedAt.plusDays(7);
+
+                case DAYS_365 ->
+                        publishedAt.plusDays(365);
+        };
+        }
 
     private String generateSlug() {
 

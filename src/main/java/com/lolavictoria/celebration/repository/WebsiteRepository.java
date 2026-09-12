@@ -1,5 +1,6 @@
 package com.lolavictoria.celebration.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,5 +16,11 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
     Optional<Website> findByPublicSlugAndStatus(
             String publicSlug,
             Status status
+    );
+
+    Optional<Website> findByPublicSlugAndStatusAndExpiresAtAfter(
+        String publicSlug,
+        Status status,
+        LocalDateTime now
     );
 }

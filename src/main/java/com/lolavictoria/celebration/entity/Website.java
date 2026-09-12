@@ -48,15 +48,51 @@ public class Website {
     @JoinColumn(name = "template_id", nullable = false)
     private WebsiteTemplate template;
 
-    // Content entered by the creator.
-    // This will contain the values required by the selected template.
-    @JdbcTypeCode (SqlTypes.JSON)
+    /*
+     * Current draft content.
+     *
+     * For a new website:
+     * - This contains what the creator is currently editing.
+     *
+     * For a published website:
+     * - This can contain newer edits that are NOT live yet.
+     *
+     * The public website does NOT use this directly.
+     * It uses the latest WebsiteVersion.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> content;
 
     // Public/shareable URL identifier
     @Column(nullable = false, unique = true, length = 50)
     private String publicSlug;
+
+    /*
+     * How long the website is available after publication.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private WebsiteDuration duration;
+
+    /*
+     * When the website was first published.
+     */
+    private LocalDateTime publishedAt;
+
+    /*
+     * When the website stops being publicly accessible.
+     */
+    private LocalDateTime expiresAt;
+
+    /*
+     * The currently live published version.
+     *
+     * The draft can continue changing without affecting this version.
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "published_version_id")
+    private WebsiteVersion publishedVersion;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -173,6 +209,38 @@ public class Website {
 
     public void setPublicSlug(String publicSlug) {
         this.publicSlug = publicSlug;
+    }
+
+    public WebsiteDuration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(WebsiteDuration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public WebsiteVersion getPublishedVersion() {
+        return publishedVersion;
+    }
+
+    public void setPublishedVersion(WebsiteVersion publishedVersion) {
+        this.publishedVersion = publishedVersion;
     }
 
     public LocalDateTime getCreatedAt() {
